@@ -11,10 +11,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class GBOXController {
  
     @RequestMapping("/main")
-    public String hello(HttpServletRequest request) throws Exception {
+    public String g_box_main(HttpServletRequest request) throws Exception {
     	
-    	String path = request.getSession().getServletContext().getRealPath("upload"); 
-    	System.out.println(path+" "+new Date());
+    	//String path = request.getSession().getServletContext().getRealPath("upload"); 
+    	//System.out.println(path+" "+new Date());
+        return "G-BOX";
+    }
+    
+    @RequestMapping("/")
+    public String g_box(HttpServletRequest request) throws Exception {
+    	
+    	//String path = request.getSession().getServletContext().getRealPath("upload"); 
+    	//System.out.println(path+" "+new Date());
         return "G-BOX";
     }
     

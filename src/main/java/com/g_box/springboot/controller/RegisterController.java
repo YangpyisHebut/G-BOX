@@ -1,16 +1,32 @@
 package com.g_box.springboot.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.g_box.springboot.mapper.UserMapper;
 import com.g_box.springboot.pojo.User;
+import com.g_box.springboot.pojo.Information;
 
 @Controller
 public class RegisterController {
-
+	
+	private String pictureaddr;
+	private String picturename;
+	
 	@Autowired 
 	UserMapper userMapper;
 	
@@ -19,9 +35,44 @@ public class RegisterController {
         return "register";
     }
 	
-	@RequestMapping("/register_handle")
-	public String register_handle(User user,Model m) {
-		System.out.println(user.getPhonenumber());
+	@RequestMapping(value="/register_handle",method=RequestMethod.POST)
+	public String register_handle(User user,Model m,MultipartFile file,HttpServletRequest request) throws Exception{
+		
+		
+		try {
+			//获取文件类型，即后缀名
+	        String str = file.getOriginalFilename();
+	        String suffix = str.substring(str.lastIndexOf("."));
+	        
+	        //用 当前日期+UUID作为文件名避免重名
+	        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+	        String dateStr = sdf.format(new Date()).replaceAll("-", "");
+	        String uuid = dateStr +UUID.randomUUID().toString().replaceAll("-", "");
+	 
+			
+			//String path = request.getSession().getServletContext().getRealPath("upload"); 
+	        String SaveFileName  = dateStr+uuid+suffix;
+	        this.picturename = SaveFileName;
+	      
+	        // System.out.println("path = "+path+" savename = "+savename);
+			//String path = "E:\\G-BOX\\picture";
+	        String path = request.getSession().getServletContext().getRealPath("/picture"); 
+			this.pictureaddr = path;
+	        try
+	        {
+	            file.transferTo(new File(path,SaveFileName));
+	        } catch (IOException e)
+	        {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        }
+		}
+		catch(Exception e) {
+			m.addAttribute("check","图片提交出错！请重新提交.");
+			return "register_jump";
+		}
+		
+		
 		try {
 			int Phonenumber_result = userMapper.checkexistphonenumber(user.getPhonenumber());
 			int Name_result = userMapper.checkexistname(user.getName());
@@ -45,12 +96,23 @@ public class RegisterController {
 			else if(Name_result==0&&Phonenumber_result==0&&user.getPhonenumber().length()==11) {
 				userMapper.add(user);
 				int ID = userMapper.getId(user.getPhonenumber());
-				//userMapper.get(user.getId());
-				//System.out.println("id === "+ID);  ===ok
-				m.addAttribute("id", ID);
-				m.addAttribute("phonenumber", user.getPhonenumber());
+				
+				
+				System.out.println(ID);
+				System.out.println(user.getPhonenumber());
+				System.out.println(this.pictureaddr);
+				System.out.println(this.picturename);
+				//String id = String.valueOf(ID);
+				String id = String.valueOf(ID);
+				String phonenumber = user.getPhonenumber();
+				String pictureaddr = this.pictureaddr;
+				String picturename = this.picturename;
+				m.addAttribute("id",id);
+				m.addAttribute("phonenumber",user.getPhonenumber());
 				m.addAttribute("name",user.getName());
-				return "register_success";
+				m.addAttribute("pictureaddr", this.pictureaddr);
+				m.addAttribute("picturename", this.picturename);
+				return "forward:/information_handle?id="+ID+"&phonenumber="+phonenumber+"&pictureaddr="+pictureaddr+"&picturename="+picturename;
 			}
 			else {
 				m.addAttribute("check","系统错误！");

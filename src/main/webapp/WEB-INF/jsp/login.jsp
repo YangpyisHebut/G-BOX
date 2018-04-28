@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">      
 <form action="login_handle" method="post">
 
 	手机号码：<input type="text" name="phonenumber"><br/>

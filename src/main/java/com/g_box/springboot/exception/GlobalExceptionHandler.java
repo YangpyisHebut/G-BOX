@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -14,6 +15,7 @@ public class GlobalExceptionHandler {
         mav.addObject("exception", e);
         mav.addObject("url", req.getRequestURL());
         mav.setViewName("errorPage");
+        System.out.println("exception=\n"+ e);
         return mav;
     }
 

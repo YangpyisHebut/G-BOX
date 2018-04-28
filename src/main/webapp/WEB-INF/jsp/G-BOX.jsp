@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">     
 <h1>MAIN</h1>
 
 <img id = 'imgid1' src="images/1.jpg">
